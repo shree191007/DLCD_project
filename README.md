@@ -22,12 +22,12 @@ gtkwave pipelined_mips.vcd
 ```
 
 ## Run gem5
+`gem5/` is the gem5 source (v26.0, upstream commit e97d8fb) **with the Minor-CPU delay-slot fix already applied**
+(`outputs/minor_delay_slot_fix.patch` is that same change) and `build_opts/MIPS_LITE` added. The `build/` output is not stored; rebuild it:
 ```
-git clone https://github.com/gem5/gem5.git && cd gem5
-git apply ../outputs/minor_delay_slot_fix.patch
-printf 'BUILD_ISA=y\nUSE_MIPS_ISA=y\n' > build_opts/MIPS_LITE
+cd gem5 && pip3 install scons
 scons build/MIPS_LITE/gem5.opt -j8
-build/MIPS_LITE/gem5.opt ../pipelined_mips.py --cpu minor --binary ../sum_unrolled.elf
-python3 ../mips_asm.py ../sum_unrolled.elf --unrolled   # regenerate the ELFs if needed
+cd .. && gem5/build/MIPS_LITE/gem5.opt pipelined_mips.py --cpu minor --binary sum_unrolled.elf
+python3 mips_asm.py sum_unrolled.elf --unrolled     # regenerate the ELFs if needed
 ```
 Results: see `outputs/gem5_summary.txt` and section 5 of `report.md`.
