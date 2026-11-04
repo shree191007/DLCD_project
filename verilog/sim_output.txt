@@ -1,0 +1,17 @@
+VCD info: dumpfile pipelined_mips.vcd opened for output.
+---- Register / memory results ----
+t0 (sum 1..10)   = 55 (expect 55)
+t1 (i)           = 11 (expect 11)
+t3 (lw result)   = 55 (expect 55)
+t4 (t3+t3)       = 110 (expect 110)
+dmem[0]          = 55 (expect 55)
+t5 (sub)         = 55 (expect 55)
+t6 (and)         = 55 (expect 55)
+t7 (or)          = 127 (expect 127)
+s0 (slt)         = 1 (expect 1)
+s1 (skipped)     = 0 (expect 0, beq taken)
+s2               = 7 (expect 7)
+---- Pipeline events (80 cycles incl. halt spin) ----
+load-use stalls = 1, branch-flushed slots = 30
+RESULT: PASS
+pipelined_mips_tb.v:53: $finish called at 816000 (1ps)

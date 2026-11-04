@@ -1,0 +1,42 @@
+diff --git a/src/cpu/minor/fetch2.cc b/src/cpu/minor/fetch2.cc
+index 27b3d89..52d0b4c 100644
+--- a/src/cpu/minor/fetch2.cc
++++ b/src/cpu/minor/fetch2.cc
+@@ -456,12 +456,37 @@ Fetch2::evaluate()
+                      */
+                     fetch_info.pc->uReset();
+ 
++                    /* ISAs with branch delay slots (MIPS, SPARC): if the PC
++                     *  state is 'branching' before this advance, this
++                     *  instruction is the delay slot of a taken branch and
++                     *  the next instruction is NOT the next word in the
++                     *  fetched line. Remember to redirect Fetch1 below. */
++                    const bool in_taken_delay_slot = fetch_info.pc->branching();
++
+                     /* Advance PC for the next instruction */
+                     decoded_inst->advancePC(*fetch_info.pc);
+ 
+                     /* Predict any branches and issue a branch if
+                      *  necessary */
+                     predictBranch(dyn_inst, prediction);
++
++                    if (in_taken_delay_slot && prediction.isBubble()) {
++                        /* Redirect fetch to the branch target that follows the
++                         *  delay slot, the same way a predicted-taken branch
++                         *  does (new predictionSeqNum, rest of line dropped).
++                         *  The delay-slot inst is not marked predictedTaken so
++                         *  Execute treats it as an ordinary instruction. */
++                        fetch_info.expectedStreamSeqNum =
++                            dyn_inst->id.streamSeqNum;
++                        prediction = BranchData(BranchData::BranchPrediction,
++                            dyn_inst->id.threadId,
++                            dyn_inst->id.streamSeqNum,
++                            fetch_info.predictionSeqNum + 1,
++                            *fetch_info.pc, dyn_inst);
++                        fetch_info.predictionSeqNum++;
++                        DPRINTF(Branch, "Delay slot done, redirecting fetch to"
++                            " %s\n", *fetch_info.pc);
++                    }
+                 } else {
+                     DPRINTF(Fetch, "Inst not ready yet\n");
+                 }

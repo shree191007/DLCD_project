@@ -1,0 +1,7 @@
+gem5 results (exit(55) confirmed via syscall trace on every run; Minor patched for MIPS delay slots)
+loop simple: cycles=2561 insts=48 exit(55)
+loop minor: cycles=2101 insts=48 exit(55)
+loop o3: cycles=756 insts=48 exit(55)
+unrolled simple: cycles=1455 insts=26 exit(55)
+unrolled minor: cycles=240 insts=26 exit(55)
+unrolled o3: cycles=241 insts=26 exit(55)

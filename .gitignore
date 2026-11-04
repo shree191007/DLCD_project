@@ -1,0 +1,5 @@
+__pycache__/
+*.vvp
+build.log
+m5out*/
+.DS_Store
